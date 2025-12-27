@@ -193,7 +193,7 @@ td button {
     const taskName = document.getElementById("taskName2").value;
     const taskPassword = document.getElementById("taskPassword2").value;
 
-    for (var i = 0; Name.length; i++) {
+    for (i = 0; Name.length; i++) {
       if(Name[i] == taskName){
         if(Password[i]  == taskPassword){
           var body = document.getElementById("bodys");
@@ -259,7 +259,7 @@ setInterval(function(){
   httpObject.send(null);
   TASKSID = httpObject.responseText;
   TASKSID2 = TASKSID['SaveData'];
-  const savedTasks = eval("(" + TASKSID2[u] + ")") || [];
+  const savedTasks = eval("(" + TASKSID2[i] + ")") || [];
   savedTasks.forEach(task => addTaskToTable(task));
 }, 10);
 </script>
