@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head id="heads">
+  <meta charset="UTF-8" />
+  <title>タスク管理アプリケーション</title>
+  <form id="taskNames2">
+  <h3>ログイン</h3>
+  <input type="text" id="taskName2">
+  <label>パスワード</label>
+  <input type="text" id="taskPassword2">
+  <button type="submit">ログイン</button>
+  </form>
+  <form id="taskName1">
+  <h3>新規登録</h3>
+  <label>タスク一覧の名前</label>
+  <input type="text" id="taskName1">
+  <label>パスワード</label>
+  <input type="text" id="taskPassword1">
+  <button type="submit">登録</button>
+  </form>
+  <style>
+    /* ===============================
+   共通スタイル（PC + モバイル）
+   =============================== */
+
+* {
+  box-sizing: border-box;
+}
+
+#taskName1 {
+  display: block;
+}
+#taskName2 {
+  display: block;
+}
+body {
+  margin: 20px;
+  color: #283655;
+  font-family: Arial, sans-serif;
+  line-height: 1.4;
+}
+
+/* 入力フォーム */
+input, select, button {
+  border: 2px solid #283655;
+  padding: 6px 10px;
+  margin: 5px 0;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+button {
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: blue;
+}
+
+/* ===============================
+   テーブル全体
+   =============================== */
+
+table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  table-layout: fixed; /* 幅を固定して崩れにくくする */
+  word-wrap: break-word;
+}
+
+th, td {
+  border: 2px solid #283655;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ヘッダセル */
+th {
+  background-color: #4A90E2;
+  color: white;
+}
+
+/* 状態セル */
+#taskList td:nth-child(2) select {
+  border: none;
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  background: transparent;
+}
+#joutai {
+  width: 120px; 
+}
+#date {
+  width: 100px;
+}
+#tasks {
+  width: 200px;
+}
+#dones { 
+  font-size: 30px;
+}
+#memo {
+  width: 500px;
+}
+
+/* 状態セルの色分けは JS で適用済み */
+
+/* 削除ボタン */
+td button {
+  background-color: black;
+  color: black;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* ===============================
+   レスポンシブ対応（スマホ）
+   =============================== */
+
+@media (max-width: 768px) {
+  body {
+    margin: 10px;
+    font-size: 14px;
+  }
+
+  input, select, button {
+    font-size: 14px;
+    padding: 5px 8px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  th, td {
+    padding: 6px;
+  }
+
+  /* 横スクロール対応 */
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* ボタンやフォームを幅いっぱいに */
+  input, select, button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 20px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  input, select, button {
+    font-size: 13px;
+    padding: 4px 6px;
+  }
+
+  th, td {
+    padding: 4px 6px;
+  }
+}
+  </style>
+  <script type="text/javascript">
+  if(window.XMLHttpRequest){
+    httpObject = new XMLHttpRequest();
+  } else if(window.ActiveXObject){
+    httpObject = new ActiveXObject('MSXML2.XMLHTTP.3.0');
+  }
+  httpObject.open("GET", "Users.json", false);
+  httpObject.send(null);
+  Users = eval("(" + httpObject.responseText + ")");
+  Name = Users.Name;
+  Password = Users.Password;
+  Tasks = Users.SaveData;
+  document.getElementById("taskNames2").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const taskName = document.getElementById("taskName2").value;
+    const taskPassword = document.getElementById("taskPassword2").value;
+
+    for (var i = 0; Name.length; i++) {
+      if(Name[i] == taskName){
+        if(Password[i]  == taskPassword){
+          var body = document.getElementById("bodys");
+          var taskName1 = document.getElementById("taskName1");
+          var taskName2 = document.getElementById("taskName2");
+          body.style.display = "block";
+          taskName1.style.display = "none";
+          taskName2.style.display = "none";
+          UserName = Name[i];
+          u = i;
+          break;
+        } else {
+          alert("パスワードが違います");
+        }
+      } else {
+        alert("IDが存在しません");
+      }
+    }
+  });
+  </script>
+</head>
+<body id="bodys">
+
+<h1 style="display:none;">タスクの追加</h1>
+
+<form id="taskForm" style="display:none;">
+  <input type="text" id="task" placeholder="タスク内容" required />
+  <select id="done" required>
+    <option value="完了">完了</option>
+    <option value="未完了" selected>未完了</option>
+    <option value="進行中">進行中</option>
+    <option value="見送り">見送り</option>
+  </select>
+  <input type="date" id="deadline" />
+  <input type="text" id="shinkoujoukyou" placeholder="メモ" />
+  <button type="submit">追加</button>
+</form>
+
+<br>
+
+<button id="saveJsonBtn" style="display:none;">保存</button>
+<button id="loadJsonBtn" style="display:none;">読み込み</button>
+<input type="file" id="jsonFileInput" accept="application/json" style="display:none;">
+
+<br><br>
+
+<button id="sortByDeadline" style="display: none;">期限順</button>
+
+<h2 style="display:none;">登録済みタスク一覧</h2>
+<input type="text" id="searchInput" placeholder="タスクを検索..." style="display:none;"/>
+<table id="taskList" style="display:none;">
+  <tr>
+    <th id="tasks">タスク</th>
+    <th id="joutai">状態</th>
+    <th id="date">完了予定日</th>
+    <th id="memo">メモ</th>
+    <th width="90px">削除</th>
+  </tr>
+</table>
+<script>
+setInterval(function(){
+  const savedTasks = eval("(" + Users['SaveData'][u] + ")") || [];
+  savedTasks.forEach(task => addTaskToTable(task));
+}, 10);
+</script>
+
+<script>
+// ----------------------
+// 1. ページロード時に localStorage のタスクを読み込み
+// ----------------------
+window.onload = function () {
+  const savedTasks = JSON.parse(localStorage.getItem("taskList")) || [];
+  savedTasks.forEach(task => addTaskToTable(task));
+};
+// ----------------------
+// タスク検索機能
+// ----------------------
+document.getElementById("searchInput").addEventListener("input", function() {
+  const query = this.value.toLowerCase(); // 小文字に変換して検索
+  const table = document.getElementById("taskList");
+  
+  // 1行ずつチェック（1行目はヘッダなので i=1 から）
+  for (let i = 1; i < table.rows.length; i++) {
+    const taskCell = table.rows[i].cells[0]; // タスク名セル
+    const taskText = taskCell.textContent.toLowerCase();
+    
+    if (taskText.includes(query)) {
+      table.rows[i].style.display = ""; // 表示
+    } else {
+      table.rows[i].style.display = "none"; // 非表示
+    }
+  }
+});
+
+
+// ----------------------
+// 2. タスク追加（追加後に期限順ソート）
+// ----------------------
+document.getElementById("taskForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const task = document.getElementById("task").value;
+  const shinkou = document.getElementById("shinkoujoukyou").value;
+  const done = document.getElementById("done").value;
+  const deadline = document.getElementById("deadline").value;
+
+  const taskObject = { task, done, deadline, shinkou };
+
+  addTaskToTable(taskObject);
+  saveToLocalStorage();
+  sortByDeadline(); // ←追加後に自動で期限順
+  document.getElementById("taskForm").reset();
+});
+
+// ----------------------
+// 3. テーブルに行を追加（編集機能付き）
+// ----------------------
+function addTaskToTable(taskObject) {
+  const table = document.getElementById("taskList");
+  const newRow = table.insertRow();
+
+  const taskCell = newRow.insertCell();
+  const doneCell = newRow.insertCell();
+  const deadlineCell = newRow.insertCell();
+  const shinkouCell = newRow.insertCell();
+
+  taskCell.textContent = taskObject.task;
+  doneCell.textContent = taskObject.done;
+  deadlineCell.textContent = taskObject.deadline;
+  shinkouCell.textContent = taskObject.shinkou;
+
+  applyStatusColor(doneCell);
+
+  // -----------------------------
+  // 編集機能を追加
+  // -----------------------------
+  const addTextEdit = (cell, type="text") => {
+    cell.addEventListener("click", () => {
+      if (cell.querySelector("input")) return; // すでに編集中なら無視
+      const input = document.createElement("input");
+      input.type = type;
+      input.value = cell.textContent;
+      cell.textContent = "";
+      cell.appendChild(input);
+      input.focus();
+
+      const finalize = () => {
+        cell.textContent = input.value;
+        saveToLocalStorage();
+        sortByDeadline(); // 編集後に自動で期限順
+      };
+
+      input.addEventListener("blur", finalize);
+      input.addEventListener("keydown", (e) => { if(e.key==="Enter") finalize(); });
+    });
+  };
+
+  // タスク名とメモはテキスト編集
+  addTextEdit(taskCell);
+  addTextEdit(shinkouCell);
+
+  // 期限は date 編集
+  addTextEdit(deadlineCell, "date");
+
+  // 状態は select 編集（改良版: 二度目選択可能）
+  doneCell.addEventListener("click", () => {
+    if (doneCell.querySelector("select")) return; // すでに編集中なら無視
+
+    const select = document.createElement("select");
+    ["完了","未完了","進行中","見送り"].forEach(status => {
+      const option = document.createElement("option");
+      option.value = status;
+      option.textContent = status;
+      if (status === doneCell.textContent) option.selected = true;
+      select.appendChild(option);
+    });
+
+    doneCell.textContent = "";
+    doneCell.appendChild(select);
+    select.focus();
+
+    // クリックで即プルダウン表示
+    select.click();
+
+    // 値が変わったら即座に反映（色と localStorage 更新）だが select は残す
+    select.addEventListener("change", () => {
+      doneCell.textContent = select.value;
+      applyStatusColor(doneCell);
+      saveToLocalStorage();
+    });
+
+    // 外部クリックや Enter で確定
+    const finalize = () => {
+      doneCell.textContent = select.value;
+      applyStatusColor(doneCell);
+      saveToLocalStorage();
+      sortByDeadline(); // 編集後に自動で期限順
+    };
+
+    select.addEventListener("blur", finalize);
+    select.addEventListener("keydown", (e) => { if(e.key==="Enter") finalize(); });
+  });
+
+  // -----------------------------
+  // 削除ボタン
+  // -----------------------------
+  const deleteCell = newRow.insertCell();
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "削除";
+  deleteBtn.style.backgroundColor = "#D3D3D3";
+  deleteBtn.addEventListener("click", function () {
+    newRow.remove();
+    saveToLocalStorage();
+    sortByDeadline();
+  });
+  deleteCell.appendChild(deleteBtn);
+  console.log(newRow);
+}
+
+// ----------------------
+// 4. localStorage に保存
+// ----------------------
+function saveToLocalStorage() {
+  table = document.getElementById("taskList");
+  rows = table.rows;
+  taskArray = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const cells = rows[i].cells;
+    if (!cells[0]) continue;
+    taskArray.push({
+        task: cells[0].textContent,
+        done: cells[1].textContent,
+        deadline: cells[2].textContent,
+        shinkou: cells[3].textContent
+    });
+  }
+  Save = {
+    Name: [],
+    Password: [],
+    SaveData: []
+  };
+  for(var k = 0; Name.length; k++){
+    Save['Name'][k] = Name[k];
+    Save['Password'][k] = Password[k];
+    Save['SaveData'][k] = Tasks[k];
+  }
+  Save['SaveData'][u] = taskArray;
+  httpObject.open("POST", "Users.json", false);
+  httpObject.send(JSON.stringify(Save));
+
+  localStorage.setItem("taskList", JSON.stringify(taskArray));
+}
+
+// ----------------------
+// 5. 状態セルの色分け
+// ----------------------
+function applyStatusColor(cell) {
+  const status = cell.textContent.trim();
+  if (status === "完了") cell.style.backgroundColor = "#90EE90";
+  else if (status === "未完了") cell.style.backgroundColor = "#FF9999";
+  else if (status === "進行中") cell.style.backgroundColor = "#FFF59D";
+  else cell.style.backgroundColor = "white";
+}
+
+// ----------------------
+// 6. JSON保存・読み込み
+// ----------------------
+document.getElementById("saveJsonBtn").addEventListener("click", function () {
+  const savedTasks = JSON.parse(localStorage.getItem("taskList")) || [];
+  const blob = new Blob([JSON.stringify(savedTasks, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "tasks.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("loadJsonBtn").addEventListener("click", function () {
+  document.getElementById("jsonFileInput").click();
+});
+
+document.getElementById("jsonFileInput").addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const jsonData = JSON.parse(e.target.result);
+      const table = document.getElementById("taskList");
+      while (table.rows.length > 1) table.deleteRow(1);
+      jsonData.forEach(task => addTaskToTable(task));
+      localStorage.setItem("taskList", JSON.stringify(jsonData));
+      sortByDeadline();
+      alert("ファイルを読み込みました！");
+    } catch (error) {
+      alert("ファイルの読み込みに失敗しました。");
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ----------------------
+// 7. 並び替え機能（完了固定）
+// ----------------------
+const statusOrderFixed = { "未完了":1, "進行中":1, "完了":99, "見送り":999 };
+
+function reloadTable(tasks) {
+  const table = document.getElementById("taskList");
+  while (table.rows.length > 1) table.deleteRow(1);
+  tasks.forEach(task => addTaskToTable(task));
+}
+
+// 期限順
+document.getElementById("sortByDeadline").addEventListener("click", sortByDeadline);
+
+function sortByDeadline() {
+  const tasks = JSON.parse(localStorage.getItem("taskList")) || [];
+  tasks.sort((a,b)=>{
+    if (statusOrderFixed[a.done] !== statusOrderFixed[b.done])
+      return statusOrderFixed[a.done] - statusOrderFixed[b.done];
+    return new Date(a.deadline) - new Date(b.deadline);
+  });
+  reloadTable(tasks);
+  localStorage.setItem("taskList", JSON.stringify(tasks));
+}
+</script>
+
+</body>
+</html>
