@@ -258,7 +258,8 @@ setInterval(function(){
   httpObject.open("GET", "Users.json", false);
   httpObject.send(null);
   TASKSID = httpObject.responseText;
-  const savedTasks = eval("(" + TASKSID['SaveData'][u] + ")") || [];
+  TASKSID2 = TASKSID['SaveData'];
+  const savedTasks = eval("(" + TASKSID2[u] + ")") || [];
   savedTasks.forEach(task => addTaskToTable(task));
 }, 10);
 </script>
