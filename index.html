@@ -255,7 +255,10 @@ td button {
 </table>
 <script>
 setInterval(function(){
-  const savedTasks = eval("(" + Users['SaveData'][u] + ")") || [];
+  httpObject.open("GET", "Users.json", false);
+  httpObject.send(null);
+  TASKSID = httpObject.responseText;
+  const savedTasks = eval("(" + TASKSID['SaveData'][u] + ")") || [];
   savedTasks.forEach(task => addTaskToTable(task));
 }, 10);
 </script>
