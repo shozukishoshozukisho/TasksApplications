@@ -177,6 +177,7 @@ td button {
 }
   </style>
   <script type="text/javascript">
+  taslOnAndOf = false;
   if(window.XMLHttpRequest){
     httpObject = new XMLHttpRequest();
   } else if(window.ActiveXObject){
@@ -190,29 +191,52 @@ td button {
   Tasks = Users.SaveData;
   document.getElementById("taskNames2").addEventListener("submit", function(event) {
     event.preventDefault();
-    const taskName = document.getElementById("taskName2").value;
-    const taskPassword = document.getElementById("taskPassword2").value;
+    var taskName = document.getElementById("taskName2").value;
+    var taskPassword = document.getElementById("taskPassword2").value;
 
-    for (i = 0; Name.length; i++) {
+    for (var i = 0; i < Name.length; i++) {
       if(Name[i] == taskName){
         if(Password[i]  == taskPassword){
           var body = document.getElementById("bodys");
-          var taskName1 = document.getElementById("taskName1");
-          var taskName2 = document.getElementById("taskName2");
+          var taskName1 = document.getElementById("taskNames1");
+          var taskName2 = document.getElementById("taskNames2");
           body.style.display = "block";
           taskName1.style.display = "none";
           taskName2.style.display = "none";
           UserName = Name[i];
           u = i;
+          taskOnAndOf = true;
           break;
         } else {
-          alert("パスワードが違います");
+          if(i == Name.length-1){
+            alert("パスワードが違います");
+          }
         }
       } else {
-        alert("IDが存在しません");
+        if(i == Name.length-1){
+          alert("IDが存在しません");
+        }
       }
     }
   });
+  document.getElementById("taskNames2").addEventListener("submit", function(event) {
+    event.preventDefault();
+    var taskName = document.getElementById("taskName1").value;
+    var taskPassword = document.getElementById("taskPassword1").value;
+    for(var j = 0; j < Name.length; j++){
+      if(Name[i] == taskName) {
+        alert("IDが重複しています");
+      } else if(j == Name.length-1){
+        alert("アカウントを作成しました");
+        Name[Name.length] = taskName;
+        Password[Password.length] = taskPassword;
+        Users.Name = Name;
+        Users.Password = Password;
+        httpObject.open("POST", "Users.json", false);
+        httpObject.send(Users);
+      }
+    }
+  }
   </script>
 </head>
 <body id="bodys">
@@ -254,14 +278,16 @@ td button {
   </tr>
 </table>
 <script>
-setInterval(function(){
-  httpObject.open("GET", "Users.json", false);
-  httpObject.send(null);
-  TASKSID = httpObject.responseText;
-  TASKSID2 = TASKSID['SaveData'];
-  const savedTasks = eval("(" + TASKSID2[i] + ")") || [];
-  savedTasks.forEach(task => addTaskToTable(task));
-}, 10);
+if(taslOnAndOf){
+  setInterval(function(){
+    httpObject.open("GET", "Users.json", false);
+    httpObject.send(null);
+    TASKSID = httpObject.responseText;
+    TASKSID2 = TASKSID['SaveData'];
+    const savedTasks = eval("(" + TASKSID2[u] + ")") || [];
+    savedTasks.forEach(task => addTaskToTable(task));
+  }, 10);
+}
 </script>
 
 <script>
